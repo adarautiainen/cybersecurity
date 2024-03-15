@@ -1,0 +1,16 @@
+<!-- myapp/templates/myapp/home.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+    <h1>Welcome to the Home Page</h1>
+    
+    <ul>
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'take_notes' %}">Take Notes</a></li>
+        <li><a href="{% url 'view_notes' %}">View Notes</a></li>
+    </ul>
+</body>
+</html>
