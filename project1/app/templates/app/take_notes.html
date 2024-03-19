@@ -1,6 +1,9 @@
 <h2>Take Notes</h2>
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    <label for="id_title">Title:</label><br>
+    <input type="text" id="id_title" name="title"><br>
+    <label for="id_content">Content:</label><br>
+    <textarea id="id_content" name="content"></textarea><br>
     <button type="submit">Save Note</button>
 </form>
