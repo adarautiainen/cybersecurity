@@ -1,16 +1,13 @@
-{% if not_authenticated %}
-    <p>You cannot view notes unless you are logged in. Please <a href="{% url 'login' %}">log in</a>.</p>
-{% else %}
+
     <h2>My Notes</h2>
     <ul>
         {% for note in notes %}
             <li>
                 <strong>{{ note.title }}</strong><br>
-                {{ note.content }}<br>
+                {{ note.url }}<br>
                 <small>Created at: {{ note.created_at }}</small>
             </li>
         {% empty %}
             <li>No notes found.</li>
         {% endfor %}
     </ul>
-{% endif %}
