@@ -7,26 +7,25 @@ from django import forms
 import sqlite3
 from django.utils import timezone
 from django.contrib.auth.hashers import check_password
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 import requests
 import re
-
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 class NoteForm(forms.ModelForm):
     class Meta:
         model = Note
         fields = ['title', 'url']
 
-# Identification and authentication flaw, do not use Django's validators in settings.py
+
+# Identification and authentication flaw passwords aren't validated, Django's validators in settings.py are commented out
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            if is_weak_password(password):
-                pass
-                # return HttpResponse("Your password is too weak. Please choose a stronger one.") # fix for the Identification and authentication flaw
             user = form.get_user()
             login(request, user)
             return redirect('home')
@@ -34,21 +33,26 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'app/login.html', {'form': form})
 
-def is_weak_password(password):
-    weak_passwords = ["password", "admin"]
-    return password in weak_passwords
-
 def logout_view(request):
     logout(request)
     return redirect('home')
 
 """
-# Alternative fix for identification and authentication flaw use this and in settings.py Django's validators
+# Fix for identification and authentication flaw use this and take comments off in settings.py Django's validators
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, request.POST)
         if form.is_valid():
-            login(request, form.get_user())
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            try:
+                validate_password(password)
+            except ValidationError as e:
+                error_message = ', '.join(e.messages)
+                return render(request, 'app/login.html', {'form': form, 'error_message': error_message})
+            
+            user = form.get_user()
+            login(request, user)
             return redirect('home')
     else:
         form = AuthenticationForm()
@@ -72,13 +76,6 @@ def take_notes(request):
         query = "INSERT INTO app_note (title, url, user_id,  created_at) VALUES (?, ?, ?, ?)" # unsafe query
         cursor.execute(query, (title, url, user_id,  created_at))
         conn.commit()
-
-        #try:
-            #response = requests.get(url)
-            #content = response.text
-        #except Exception as e:
-           # content = f"Error fetching URL: {e}"
-        
         conn.close()
 
         return redirect('view_notes')
@@ -87,63 +84,43 @@ def take_notes(request):
         return render(request, 'app/take_notes.html')
 
 """
-# Fix for Server-Side Request Forgery
+# Fix for Server-Side Request Forgery and fix for SQL injection
 
 def take_notes(request):
+    error_message = None
     if request.method == 'POST':
         form = NoteForm(request.POST)
         if form.is_valid():
             note = form.save(commit=False)
             note.user = request.user
-            note.save()
 
             url = note.url
             if not is_safe_url(url):  # validate URL
-                return HttpResponseBadRequest("Invalid URL")
+                error_message = "Invalid URL"
+            else:
+                try:
+                    response = requests.get(url)
+                    content = response.text
+                    note.save()
+                    return redirect('view_notes')
+                except Exception as e:
+                    error_message = f"Error fetching URL: {e}"
 
-            try:
-                response = requests.get(url)
-                content = response.text
-            except Exception as e:
-                content = f"Error fetching URL: {e}"
-
-        return redirect('view_notes')
     else:
         form = NoteForm()
-        return render(request, 'app/take_notes.html', {'form': form})
+    return render(request, 'app/take_notes.html', {'form': form, 'error_message': error_message})
 
 def is_safe_url(url):
     # list of trusted domains
     trusted_domains = ['google.com', 'cybersecuritybase.mooc.fi']
 
-    # Check if the URL starts with 'http://' or 'https://'
-    if not (url.startswith('http://') or url.startswith('https://')):
-        return False
-
-    # Extract the domain from the URL
-    domain = re.match(r'^https?://([^/]+)', url).group(1)
-
-    # Check if the extracted domain is in the list of trusted domains
-    if domain not in trusted_domains:
-        return False
-
-    return True
-"""
-
-"""
-# Fix for SQL injection
-
-def take_notes(request):
-    if request.method == 'POST':
-        form = NoteForm(request.POST)
-        if form.is_valid():
-            note = form.save(commit=False)
-            note.user = request.user
-            note.save()
-            return redirect('view_notes')
+    domain = re.match(r'^https?://(?:www\.)?([^/]+)', url)
+    if domain:
+        domain = domain.group(1)
     else:
-        form = NoteForm()
-    return render(request, 'app/take_notes.html', {'form': form})
+        return False
+
+    return domain in trusted_domains
 """
 
 # Broken Access Control flaw, users can access other users notes, user should only see own notes

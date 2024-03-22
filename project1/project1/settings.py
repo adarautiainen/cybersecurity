@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 """
 Fix for Security Misconfiguration flaw
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [‘localhost’]
 """
 
 # Application definition

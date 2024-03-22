@@ -3,3 +3,6 @@
     {{ form.as_p }}
     <button type="submit">Login</button>
 </form>
+{% if error_message %}
+    <p>{{ error_message }}</p>
+{% endif %}
