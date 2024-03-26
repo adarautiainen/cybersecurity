@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Note
 from django import forms
 import sqlite3
-from django.utils import timezone
 from django.contrib.auth.hashers import check_password
 from django.http import HttpResponse, HttpResponseBadRequest
 import requests
@@ -69,12 +68,11 @@ def take_notes(request):
         title = request.POST.get('title')
         url = request.POST.get('url') # getting url from user and not validating it
         user_id = request.user.id
-        created_at = timezone.now()
 
         conn = sqlite3.connect('db.sqlite3')
         cursor = conn.cursor()
-        query = "INSERT INTO app_note (title, url, user_id,  created_at) VALUES (?, ?, ?, ?)" # unsafe query
-        cursor.execute(query, (title, url, user_id,  created_at))
+        query = "INSERT INTO app_note (title, url, user_id) VALUES (?, ?, ?)" # unsafe query
+        cursor.execute(query, (title, url, user_id))
         conn.commit()
         conn.close()
 

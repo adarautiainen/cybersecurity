@@ -5,7 +5,7 @@
             <li>
                 <strong>{{ note.title }}</strong><br>
                 {{ note.url }}<br>
-                <small>Created at: {{ note.created_at }}</small>
+                <small>Created by: {{ note.user.username }}</small>
             </li>
         {% empty %}
             <li>No notes found.</li>
