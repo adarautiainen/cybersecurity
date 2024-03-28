@@ -4,24 +4,26 @@ This project is done for University of Helsinki course Cyber Security Base.
 
 ## How to use this app
 
-1.
+1. Clone the project
+
+2.
 ```bash
 ~cybersecurity/$ cd project1
 ```
-2.
+3.
 ```bash
 poetry install
 poetry shell
 ```
-3.
+4.
 ```bash
 python manage.py makemigrations
 ```
-4.
+5.
 ```bash
 python manage.py migrate
 ```
-5. Start the app
+6. Start the app
 ```bash
 python manage.py runserver
 ```
