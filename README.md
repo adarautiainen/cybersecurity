@@ -28,7 +28,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-## Project report
+## Descriptions of the flaws and fixes
 
 **FLAW 1: Injection**
 
