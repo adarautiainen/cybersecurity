@@ -169,7 +169,7 @@ def register_view(request):
 # Fix for identification and authentication flaw use this and take comments off in settings.py Django's validators
 def register_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request, request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
