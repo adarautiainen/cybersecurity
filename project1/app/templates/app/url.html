@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Get URLS</title>
+</head>
+<body>
+<form action="{% url 'get_url' %}" method="GET">
+    <label for="url">Enter URL:</label><br>
+    <input type="text" id="url" name="url" required><br>
+    <input type="submit" value="Get">
+</form>
+{% if data %}
+    <h2>Fetched from URL:</h2>
+    <pre>{{ data }}</pre>
+{% endif %}
+{% if error_message %}
+    <p>{{ error_message }}</p>
+{% endif %}
+</body>
+</html>

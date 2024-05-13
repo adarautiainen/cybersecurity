@@ -28,10 +28,8 @@ DEBUG = True
 # Security Misconfiguration flaw, allows requests from any host
 ALLOWED_HOSTS = ['*']
 
-"""
-Fix for Security Misconfiguration flaw
-ALLOWED_HOSTS = [‘localhost’]
-"""
+# Fix for Security Misconfiguration flaw
+# ALLOWED_HOSTS = [‘localhost’]
 
 # Application definition
 

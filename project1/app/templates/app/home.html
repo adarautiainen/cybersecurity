@@ -14,6 +14,7 @@
     {% else %}
         <ul>
             <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'register' %}">Register</a></li>
         </ul>
     {% endif %}
     
@@ -21,6 +22,7 @@
     {% if user.is_authenticated %}
         <li><a href="{% url 'take_notes' %}">Take Notes</a></li>
         <li><a href="{% url 'view_notes' %}">View Notes</a></li>
+        <li><a href="{% url 'get_url' %}">Get URL</a></li>
     {% endif %}
     </ul>
 </body>
